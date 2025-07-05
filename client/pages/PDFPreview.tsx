@@ -4,7 +4,6 @@ import { Download, ArrowLeft, FileText } from "lucide-react";
 import { Scene } from "@shared/api";
 import { fetchScenes, downloadPdf } from "@/lib/api";
 
-
 export default function PDFPreview() {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
@@ -17,15 +16,15 @@ export default function PDFPreview() {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const blob = await downloadPdf();
+      const blob = await downloadPdf(scenes);
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'storyboard.pdf';
+      link.download = "storyboard.pdf";
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert('Failed to generate PDF');
+      alert("Failed to generate PDF");
     } finally {
       setIsDownloading(false);
     }
@@ -150,7 +149,7 @@ export default function PDFPreview() {
               <div className="text-sm text-gray-400 space-y-2">
                 <p>Total Scenes: {scenes.length}</p>
                 <p>
-                  Designed with love by{' '}
+                  Designed with love by{" "}
                   <span className="text-brand-blue font-medium">
                     yantramayaa designs
                   </span>

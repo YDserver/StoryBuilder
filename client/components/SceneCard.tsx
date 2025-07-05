@@ -33,14 +33,34 @@ export function SceneCard({
     scene.image = updated.image;
     onUpdate?.(updated);
   };
-  const [title, setTitle] = useState(scene.title);
-  const [voiceover, setVoiceover] = useState(scene.voiceover);
-  const [details, setDetails] = useState(scene.details);
+ 
+  const initialTitle =
+    index !== undefined &&
+    scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+      ? ""
+      : scene.title;
+  const [title, setTitle] = useState(initialTitle);
+  const [voiceover, setVoiceover] = useState(
+    scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+  );
+  const [details, setDetails] = useState(
+    scene.details === "Enter scene details here..." ? "" : scene.details,
+  );
 
   useEffect(() => {
-    setTitle(scene.title);
-    setVoiceover(scene.voiceover);
-    setDetails(scene.details);
+    setTitle(
+      index !== undefined &&
+        scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+        ? ""
+        : scene.title,
+    );
+    setVoiceover(
+      scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+    );
+    setDetails(
+      scene.details === "Enter scene details here..." ? "" : scene.details,
+    );
+ 
   }, [scene.id]);
 
   const saveField = async (data: Partial<Scene>) => {

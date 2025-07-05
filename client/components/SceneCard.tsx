@@ -33,6 +33,7 @@ export function SceneCard({
     scene.image = updated.image;
     onUpdate?.(updated);
   };
+ 
   const initialTitle =
     index !== undefined &&
     scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
@@ -59,6 +60,7 @@ export function SceneCard({
     setDetails(
       scene.details === "Enter scene details here..." ? "" : scene.details,
     );
+ 
   }, [scene.id]);
 
   const saveField = async (data: Partial<Scene>) => {

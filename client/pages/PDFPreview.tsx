@@ -1,65 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Download, ArrowLeft, FileText } from "lucide-react";
+import { Scene } from "@shared/api";
+import { fetchScenes, downloadPdf } from "@/lib/api";
 
-interface Scene {
-  id: number;
-  title: string;
-  image: string;
-  voiceover: string;
-  details: string;
-}
-
-const mockScenes: Scene[] = [
-  {
-    id: 1,
-    title: "Scene 1",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=800",
-    voiceover:
-      'Narrator: "In the heart of the enchanted forest, where ancient trees whispered secrets to the wind, lived a young adventurer named Elara. Her quest began with a mysterious map, promising untold wonders and hidden dangers."',
-    details:
-      "The opening scene establishes our protagonist in a mystical forest setting. Camera slowly pans through towering trees before focusing on Elara examining an ancient map.",
-  },
-  {
-    id: 2,
-    title: "Scene 2",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/46e4b669b657fa837e660978a7867318f63eadd8?width=800",
-    voiceover:
-      'Narrator: "As she stepped deeper into the unknown, strange creatures began to emerge from the shadows, their glowing eyes watching her every move."',
-    details:
-      "Transition to darker atmosphere as mysterious creatures appear. Focus on creature eyes glowing in the darkness to build tension.",
-  },
-  {
-    id: 3,
-    title: "Scene 3",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/012bce2ea8be7c3e4df223c90c2a6d5ca721fdee?width=800",
-    voiceover:
-      'Narrator: "But Elara was not afraid. She had trained for this moment her entire life, and her courage would light the way forward."',
-    details:
-      "Close-up on Elara's determined expression. Lighting shifts to more hopeful as she prepares for the journey ahead.",
-  },
-];
 
 export default function PDFPreview() {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [scenes, setScenes] = useState<Scene[]>([]);
+
+  useEffect(() => {
+    fetchScenes().then(setScenes);
+  }, []);
 
   const handleDownload = async () => {
     setIsDownloading(true);
-    // Simulate PDF generation
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // In a real implementation, this would generate and download the actual PDF
+    const blob = await downloadPdf();
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = "#"; // Would be the PDF blob URL
-    link.download = "storyboard-preview.pdf";
-    // link.click();
-
+    link.href = url;
+    link.download = "storyboard.pdf";
+    link.click();
+    URL.revokeObjectURL(url);
     setIsDownloading(false);
-    alert("PDF would be downloaded here");
   };
 
   const handleBack = () => {
@@ -114,7 +78,7 @@ export default function PDFPreview() {
 
           {/* PDF Content */}
           <div className="p-8 space-y-12">
-            {mockScenes.map((scene, index) => (
+            {scenes.map((scene, index) => (
               <div key={scene.id} className="page-break-inside-avoid">
                 {/* Scene Header */}
                 <div className="border-b border-gray-200 pb-4 mb-6">
@@ -170,7 +134,7 @@ export default function PDFPreview() {
                 </div>
 
                 {/* Separator for next scene */}
-                {index < mockScenes.length - 1 && (
+                {index < scenes.length - 1 && (
                   <div className="mt-12 border-t border-gray-300"></div>
                 )}
               </div>
@@ -179,7 +143,7 @@ export default function PDFPreview() {
             {/* PDF Footer */}
             <div className="mt-16 pt-8 border-t border-gray-200 text-center">
               <div className="text-sm text-gray-500 space-y-2">
-                <p>Total Scenes: {mockScenes.length}</p>
+                <p>Total Scenes: {scenes.length}</p>
                 <p>
                   Designed with love by{" "}
                   <span className="text-blue-600 font-medium">

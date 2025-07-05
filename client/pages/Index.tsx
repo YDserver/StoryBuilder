@@ -21,6 +21,10 @@ export default function Index() {
     });
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('scenes', JSON.stringify(scenes));
+  }, [scenes]);
+
   const handleExportPDF = () => {
     window.location.href = "/pdf-preview";
   };

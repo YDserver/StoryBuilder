@@ -15,6 +15,8 @@ interface Project {
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [titleDraft, setTitleDraft] = useState<string>('');
 
   useEffect(() => {
     const saved = localStorage.getItem("projects");
@@ -42,14 +44,26 @@ export default function Dashboard() {
         "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=400",
     };
     setProjects([newProject, ...projects]);
+    setEditingId(newProject.id);
+    setTitleDraft(newProject.title);
   };
 
   const handleRenameProject = (id: number) => {
-    const name = prompt("Project name?");
-    if (!name) return;
-    setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, title: name } : p)),
-    );
+    const project = projects.find((p) => p.id === id);
+    if (!project) return;
+    setEditingId(id);
+    setTitleDraft(project.title);
+  };
+
+  const commitRename = () => {
+    if (editingId === null) return;
+    const name = titleDraft.trim();
+    if (name) {
+      setProjects((prev) =>
+        prev.map((p) => (p.id === editingId ? { ...p, title: name } : p)),
+      );
+    }
+    setEditingId(null);
   };
 
   return (
@@ -87,9 +101,20 @@ export default function Dashboard() {
 
               <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold text-white truncate">
-                    {project.title}
-                  </h3>
+                  {editingId === project.id ? (
+                    <input
+                      autoFocus
+                      value={titleDraft}
+                      onChange={(e) => setTitleDraft(e.target.value)}
+                      onBlur={commitRename}
+                      onKeyDown={(e) => e.key === 'Enter' && commitRename()}
+                      className="bg-dark-lighter border border-gray-600 rounded px-2 py-1 text-sm text-white w-full mr-2"
+                    />
+                  ) : (
+                    <h3 className="text-lg font-bold text-white truncate">
+                      {project.title}
+                    </h3>
+                  )}
                   <button
                     onClick={() => handleRenameProject(project.id)}
                     className="text-gray-400 hover:text-white p-1"

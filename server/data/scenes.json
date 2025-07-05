@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Scene 1",
+    "image": "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=800",
+    "voiceover": "Narrator: \"In the heart of the enchanted forest, where ancient trees whispered secrets to the wind, lived a young adventurer named Elara. Her quest began with a mysterious map, promising untold wonders and hidden dangers.\"",
+    "details": "The opening scene establishes our protagonist in a mystical forest setting. Camera slowly pans through towering trees before focusing on Elara examining an ancient map."
+  },
+  {
+    "id": 2,
+    "title": "Scene 2",
+    "image": "https://cdn.builder.io/api/v1/image/assets/TEMP/46e4b669b657fa837e660978a7867318f63eadd8?width=800",
+    "voiceover": "Narrator: \"As she stepped deeper into the unknown, strange creatures began to emerge from the shadows, their glowing eyes watching her every move.\"",
+    "details": "Transition to darker atmosphere as mysterious creatures appear. Focus on creature eyes glowing in the darkness to build tension."
+  },
+  {
+    "id": 3,
+    "title": "Scene 3",
+    "image": "https://cdn.builder.io/api/v1/image/assets/TEMP/012bce2ea8be7c3e4df223c90c2a6d5ca721fdee?width=800",
+    "voiceover": "Narrator: \"But Elara was not afraid. She had trained for this moment her entire life, and her courage would light the way forward.\"",
+    "details": "Close-up on Elara's determined expression. Lighting shifts to more hopeful as she prepares for the journey ahead."
+  }
+]

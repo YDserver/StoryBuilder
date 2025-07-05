@@ -1,95 +1,42 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Download, Plus } from "lucide-react";
 import { Header, ProjectHeader } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { SceneCard } from "@/components/SceneCard";
+import { Scene, CreateScenePayload } from "@shared/api";
+import { fetchScenes, addScene } from "@/lib/api";
 
-interface Scene {
-  id: number;
-  title: string;
-  image: string;
-  voiceover: string;
-  details: string;
-}
-
-const mockScenes: Scene[] = [
-  {
-    id: 1,
-    title: "Scene 1",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=800",
-    voiceover:
-      'Narrator: "In the heart of the enchanted forest, where ancient trees whispered secrets to the wind, lived a young adventurer named Elara. Her quest began with a mysterious map, promising untold wonders and hidden dangers."',
-    details:
-      "The opening scene establishes our protagonist in a mystical forest setting. Camera slowly pans through towering trees before focusing on Elara examining an ancient map.",
-  },
-  {
-    id: 2,
-    title: "Scene 2",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/46e4b669b657fa837e660978a7867318f63eadd8?width=800",
-    voiceover:
-      'Narrator: "As she stepped deeper into the unknown, strange creatures began to emerge from the shadows, their glowing eyes watching her every move."',
-    details:
-      "Transition to darker atmosphere as mysterious creatures appear. Focus on creature eyes glowing in the darkness to build tension.",
-  },
-  {
-    id: 3,
-    title: "Scene 3",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/012bce2ea8be7c3e4df223c90c2a6d5ca721fdee?width=800",
-    voiceover:
-      'Narrator: "But Elara was not afraid. She had trained for this moment her entire life, and her courage would light the way forward."',
-    details:
-      "Close-up on Elara's determined expression. Lighting shifts to more hopeful as she prepares for the journey ahead.",
-  },
-  {
-    id: 4,
-    title: "Scene 4",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=800",
-    voiceover:
-      'Narrator: "The path ahead was treacherous, but each step brought her closer to uncovering the ancient secrets that lay hidden."',
-    details:
-      "Wide shot of the challenging terrain ahead. Camera movement suggests the difficult journey to come.",
-  },
-  {
-    id: 5,
-    title: "Scene 5",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/46e4b669b657fa837e660978a7867318f63eadd8?width=800",
-    voiceover:
-      'Narrator: "And so began the greatest adventure of her lifetime, one that would test her courage, wisdom, and the strength of her heart."',
-    details:
-      "Epic establishing shot showing the vast world ahead. Final scene sets up the grand scope of the adventure to come.",
-  },
-];
 
 export default function Index() {
-  const navigate = useNavigate();
-  const [scenes, setScenes] = useState<Scene[]>(mockScenes);
+  const [scenes, setScenes] = useState<Scene[]>([]);
   const [selectedScene, setSelectedScene] = useState<number>(1);
   const [showFullView, setShowFullView] = useState<boolean>(false);
 
   const currentScene =
     scenes.find((scene) => scene.id === selectedScene) || scenes[0];
 
+  useEffect(() => {
+    fetchScenes().then((data) => {
+      setScenes(data);
+      if (data.length) setSelectedScene(data[0].id);
+    });
+  }, []);
+
   const handleExportPDF = () => {
-    navigate("/pdf-preview");
+    window.location.href = "/pdf-preview";
   };
 
-  const handleAddScene = () => {
-    const newScene: Scene = {
-      id: Date.now(),
+  const handleAddScene = async () => {
+    const payload: CreateScenePayload = {
       title: `Scene ${scenes.length + 1}`,
       image:
         "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=800",
       voiceover: "Enter voiceover text here...",
       details: "Enter scene details here...",
     };
-    setScenes([...scenes, newScene]);
-    setSelectedScene(newScene.id);
+    const created = await addScene(payload);
+    setScenes([...scenes, created]);
+    setSelectedScene(created.id);
   };
 
   return (
@@ -155,8 +102,17 @@ export default function Index() {
             {showFullView ? (
               // Full vertical view of all scenes
               <div className="max-w-4xl mx-auto px-4 lg:px-6 py-6 space-y-12">
-                {scenes.map((scene) => (
-                  <SceneCard key={scene.id} scene={scene} variant="full" />
+                {scenes.map((scene, idx) => (
+                  <SceneCard
+                    key={scene.id}
+                    scene={scene}
+                    variant="full"
+                    onUpdate={(s) => {
+                      const copy = [...scenes];
+                      copy[idx] = s;
+                      setScenes(copy);
+                    }}
+                  />
                 ))}
 
                 {/* Add Scene Button */}
@@ -185,7 +141,18 @@ export default function Index() {
                   </button>
                 </div>
 
-                <SceneCard scene={currentScene} variant="single" />
+                <SceneCard
+                  scene={currentScene}
+                  variant="single"
+                  onUpdate={(s) => {
+                    const idx = scenes.findIndex((sc) => sc.id === s.id);
+                    if (idx !== -1) {
+                      const copy = [...scenes];
+                      copy[idx] = s;
+                      setScenes(copy);
+                    }
+                  }}
+                />
 
                 {/* Add Scene Button */}
                 <div className="flex justify-center mt-8 pt-8 border-t border-gray-600">

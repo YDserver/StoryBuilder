@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { updateScene } from "@/lib/api";
 
 interface Scene {
   id: number;
@@ -12,24 +13,39 @@ interface SceneCardProps {
   scene: Scene;
   variant?: "single" | "full";
   className?: string;
+  onUpdate?: (scene: Scene) => void;
 }
 
 export function SceneCard({
   scene,
   variant = "single",
   className,
+  onUpdate,
 }: SceneCardProps) {
+  const handleReplaceImage = async () => {
+    const url = prompt("New image URL", scene.image);
+    if (!url) return;
+    const updated = await updateScene(scene.id, { image: url });
+    scene.image = updated.image;
+    onUpdate?.(updated);
+  };
   if (variant === "full") {
     return (
       <div className={cn("space-y-6", className)}>
         <h3 className="text-2xl font-bold text-white">{scene.title}</h3>
 
-        <div className="aspect-video bg-dark-lighter rounded-xl overflow-hidden">
+        <div className="aspect-video bg-dark-lighter rounded-xl overflow-hidden relative">
           <img
             src={scene.image}
             alt={scene.title}
             className="w-full h-full object-cover"
           />
+          <button
+            onClick={handleReplaceImage}
+            className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
+          >
+            Replace Image
+          </button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -61,12 +77,18 @@ export function SceneCard({
 
   return (
     <div className={cn("space-y-6", className)}>
-      <div className="aspect-video bg-dark-lighter rounded-xl overflow-hidden">
+      <div className="aspect-video bg-dark-lighter rounded-xl overflow-hidden relative">
         <img
           src={scene.image}
           alt={scene.title}
           className="w-full h-full object-cover"
         />
+        <button
+          onClick={handleReplaceImage}
+          className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
+        >
+          Replace Image
+        </button>
       </div>
 
       <div className="space-y-6">

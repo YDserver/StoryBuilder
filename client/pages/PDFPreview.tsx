@@ -17,7 +17,7 @@ export default function PDFPreview() {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const blob = await downloadPdf(scenes);
+      const blob = await downloadPdf(scenes, remarks);
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

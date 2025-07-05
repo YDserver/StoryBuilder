@@ -12,39 +12,9 @@ interface Project {
   thumbnail: string;
 }
 
-const mockProjects: Project[] = [
-  {
-    id: 1,
-    title: "Enchanted Forest Adventure",
-    description:
-      "A mystical journey through an ancient forest with magical creatures",
-    lastEdited: "2 days ago",
-    sceneCount: 5,
-    thumbnail:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=400",
-  },
-  {
-    id: 2,
-    title: "Space Explorer Chronicles",
-    description: "Epic space adventure across distant galaxies",
-    lastEdited: "1 week ago",
-    sceneCount: 8,
-    thumbnail:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/46e4b669b657fa837e660978a7867318f63eadd8?width=400",
-  },
-  {
-    id: 3,
-    title: "Underwater Kingdom",
-    description: "Deep sea adventure in the realm of mermaids",
-    lastEdited: "2 weeks ago",
-    sceneCount: 6,
-    thumbnail:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/012bce2ea8be7c3e4df223c90c2a6d5ca721fdee?width=400",
-  },
-];
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const handleCreateProject = () => {
     const newProject: Project = {

@@ -15,7 +15,9 @@ export const generatePdf: RequestHandler = (_req, res) => {
   const doc = new PDFDocument();
   const scenes = readScenes();
 
+  res.status(200);
   res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=storyboard.pdf");
 
   doc.pipe(res);
 

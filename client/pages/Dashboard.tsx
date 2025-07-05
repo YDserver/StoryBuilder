@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Calendar, MoreVertical } from "lucide-react";
 import { Header } from "@/components/Header";
@@ -16,6 +16,21 @@ interface Project {
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("projects");
+    if (saved) {
+      try {
+        setProjects(JSON.parse(saved) as Project[]);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }, [projects]);
+
   const handleCreateProject = () => {
     const newProject: Project = {
       id: Date.now(),
@@ -27,6 +42,14 @@ export default function Dashboard() {
         "https://cdn.builder.io/api/v1/image/assets/TEMP/08011607c6a0e23896437034e591fad03111f03b?width=400",
     };
     setProjects([newProject, ...projects]);
+  };
+
+  const handleRenameProject = (id: number) => {
+    const name = prompt("Project name?");
+    if (!name) return;
+    setProjects((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, title: name } : p)),
+    );
   };
 
   return (
@@ -67,7 +90,10 @@ export default function Dashboard() {
                   <h3 className="text-lg font-bold text-white truncate">
                     {project.title}
                   </h3>
-                  <button className="text-gray-400 hover:text-white p-1">
+                  <button
+                    onClick={() => handleRenameProject(project.id)}
+                    className="text-gray-400 hover:text-white p-1"
+                  >
                     <MoreVertical className="w-4 h-4" />
                   </button>
                 </div>

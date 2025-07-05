@@ -85,7 +85,10 @@ export async function deleteScene(id: number): Promise<void> {
   }
 }
 
-export async function downloadPdf(scenes: Scene[]): Promise<Blob> {
+export async function downloadPdf(
+  scenes: Scene[],
+  remarks?: string,
+): Promise<Blob> {
   try {
 
     const res = await fetch("/api/pdf", {
@@ -94,7 +97,7 @@ export async function downloadPdf(scenes: Scene[]): Promise<Blob> {
         "Content-Type": "application/json",
         Accept: "application/pdf",
       },
-      body: JSON.stringify({ scenes }),
+      body: JSON.stringify({ scenes, remarks }),
     });
     if (!res.ok) throw new Error("Failed to generate pdf");
 

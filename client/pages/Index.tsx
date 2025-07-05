@@ -9,11 +9,10 @@ import { fetchScenes, addScene } from "@/lib/api";
 
 export default function Index() {
   const [scenes, setScenes] = useState<Scene[]>([]);
-  const [selectedScene, setSelectedScene] = useState<number>(1);
+  const [selectedScene, setSelectedScene] = useState<number | null>(null);
   const [showFullView, setShowFullView] = useState<boolean>(false);
 
-  const currentScene =
-    scenes.find((scene) => scene.id === selectedScene) || scenes[0];
+  const currentScene = scenes.find((scene) => scene.id === selectedScene) || null;
 
   useEffect(() => {
     fetchScenes().then((data) => {
@@ -99,7 +98,18 @@ export default function Index() {
 
           {/* Scene Content */}
           <div className="flex-1 overflow-y-auto">
-            {showFullView ? (
+            {scenes.length === 0 ? (
+              <div className="max-w-4xl mx-auto px-4 lg:px-6 py-6 text-center">
+                <p className="text-gray-400 mb-4">No scenes yet</p>
+                <button
+                  onClick={handleAddScene}
+                  className="flex items-center gap-2 px-6 py-3 bg-dark-card border border-gray-600 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Scene
+                </button>
+              </div>
+            ) : showFullView ? (
               // Full vertical view of all scenes
               <div className="max-w-4xl mx-auto px-4 lg:px-6 py-6 space-y-12">
                 {scenes.map((scene, idx) => (

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { updateScene } from "@/lib/api";
 import { Textarea } from "@/components/ui/textarea";
+ 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+ 
 
 interface Scene {
   id: number;
@@ -83,6 +85,40 @@ export function SceneCard({
       scene.details === "Enter scene details here..." ? "" : scene.details,
     );
     setImageInput(scene.image);
+  }, [scene.id]);
+
+  const saveField = async (data: Partial<Scene>) => {
+    const updated = await updateScene(scene.id, data);
+    onUpdate?.(updated);
+  };
+ 
+  const initialTitle =
+    index !== undefined &&
+    scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+      ? ""
+      : scene.title;
+  const [title, setTitle] = useState(initialTitle);
+  const [voiceover, setVoiceover] = useState(
+    scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+  );
+  const [details, setDetails] = useState(
+    scene.details === "Enter scene details here..." ? "" : scene.details,
+  );
+
+  useEffect(() => {
+    setTitle(
+      index !== undefined &&
+        scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+        ? ""
+        : scene.title,
+    );
+    setVoiceover(
+      scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+    );
+    setDetails(
+      scene.details === "Enter scene details here..." ? "" : scene.details,
+    );
+ 
   }, [scene.id]);
 
   const saveField = async (data: Partial<Scene>) => {

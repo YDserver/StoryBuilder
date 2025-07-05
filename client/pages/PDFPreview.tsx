@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Download, ArrowLeft, FileText } from "lucide-react";
 import { Scene } from "@shared/api";
 import { fetchScenes, downloadPdf } from "@/lib/api";
+ 
 import { Textarea } from "@/components/ui/textarea";
+ 
 
 export default function PDFPreview() {
   const navigate = useNavigate();

@@ -8,6 +8,7 @@ export default function PDFPreview() {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
   const [scenes, setScenes] = useState<Scene[]>([]);
+  const [remarks, setRemarks] = useState("");
 
   useEffect(() => {
     fetchScenes().then(setScenes);
@@ -70,14 +71,14 @@ export default function PDFPreview() {
         {/* PDF Container */}
         <div className="bg-dark-card border border-gray-600 rounded-lg overflow-hidden">
           {/* PDF Header */}
-          <div className="bg-dark-lighter text-white p-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">
-              Enchanted Forest Adventure
-            </h1>
-            <p className="text-gray-400">Storyboard Presentation</p>
-            <div className="mt-4 text-sm text-gray-500">
-              Generated on {new Date().toLocaleDateString()}
-            </div>
+          <div className="bg-dark-lighter text-white p-8 text-center space-y-4">
+            <h1 className="text-3xl font-bold">Storyboard Presentation</h1>
+            <textarea
+              className="w-full bg-dark-card border border-gray-600 rounded p-2 text-sm text-white"
+              placeholder="Remarks"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+            />
           </div>
 
           {/* PDF Content */}

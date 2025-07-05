@@ -1,7 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { updateScene } from "@/lib/api";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Scene {
   id: number;
@@ -26,12 +35,25 @@ export function SceneCard({
   onUpdate,
   index,
 }: SceneCardProps) {
-  const handleReplaceImage = async () => {
-    const url = prompt("New image URL", scene.image);
-    if (!url) return;
-    const updated = await updateScene(scene.id, { image: url });
+  const [open, setOpen] = useState(false);
+  const [newImage, setNewImage] = useState(scene.image);
+
+  const handleSaveImage = async () => {
+    if (!newImage) return;
+    const updated = await updateScene(scene.id, { image: newImage });
     scene.image = updated.image;
     onUpdate?.(updated);
+    setOpen(false);
+  };
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setNewImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
  
   const initialTitle =
@@ -87,12 +109,36 @@ export function SceneCard({
             alt={scene.title}
             className="w-full h-full object-cover"
           />
-          <button
-            onClick={handleReplaceImage}
-            className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
-          >
-            Replace Image
-          </button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button
+                className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
+              >
+                Replace Image
+              </button>
+            </DialogTrigger>
+            <DialogContent className="bg-dark-card border border-gray-600 text-white">
+              <DialogHeader>
+                <DialogTitle>Replace Image</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  className="w-full bg-dark-lighter border border-gray-600 rounded px-2 py-1"
+                  placeholder="Image URL"
+                  value={newImage}
+                  onChange={(e) => setNewImage(e.target.value)}
+                />
+                <input type="file" accept="image/*" onChange={handleFile} />
+              </div>
+              <DialogFooter className="mt-4">
+                <Button variant="secondary" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveImage}>Save</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -144,12 +190,36 @@ export function SceneCard({
           alt={scene.title}
           className="w-full h-full object-cover"
         />
-        <button
-          onClick={handleReplaceImage}
-          className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
-        >
-          Replace Image
-        </button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <button
+              className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
+            >
+              Replace Image
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-dark-card border border-gray-600 text-white">
+            <DialogHeader>
+              <DialogTitle>Replace Image</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <input
+                type="text"
+                className="w-full bg-dark-lighter border border-gray-600 rounded px-2 py-1"
+                placeholder="Image URL"
+                value={newImage}
+                onChange={(e) => setNewImage(e.target.value)}
+              />
+              <input type="file" accept="image/*" onChange={handleFile} />
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="secondary" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveImage}>Save</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="space-y-6">

@@ -16,14 +16,19 @@ export default function PDFPreview() {
 
   const handleDownload = async () => {
     setIsDownloading(true);
-    const blob = await downloadPdf();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "storyboard.pdf";
-    link.click();
-    URL.revokeObjectURL(url);
-    setIsDownloading(false);
+    try {
+      const blob = await downloadPdf();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'storyboard.pdf';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to generate PDF');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleBack = () => {
@@ -31,29 +36,29 @@ export default function PDFPreview() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-space-grotesk">
+    <div className="min-h-screen bg-dark font-space-grotesk">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-dark-card border-b border-gray-600 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Project
             </button>
-            <div className="w-px h-6 bg-gray-300"></div>
+            <div className="w-px h-6 bg-gray-600"></div>
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-gray-600" />
-              <h1 className="text-xl font-bold text-gray-800">PDF Preview</h1>
+              <FileText className="w-5 h-5 text-gray-300" />
+              <h1 className="text-xl font-bold text-white">PDF Preview</h1>
             </div>
           </div>
 
           <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
+            className="flex items-center gap-2 px-6 py-2 bg-brand-blue text-dark text-sm font-bold rounded-lg hover:bg-opacity-90 disabled:opacity-50 transition-colors"
           >
             <Download className="w-4 h-4" />
             {isDownloading ? "Generating..." : "Download PDF"}
@@ -64,14 +69,14 @@ export default function PDFPreview() {
       {/* PDF Preview Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* PDF Container */}
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-dark-card border border-gray-600 rounded-lg overflow-hidden">
           {/* PDF Header */}
-          <div className="bg-gray-800 text-white p-8 text-center">
+          <div className="bg-dark-lighter text-white p-8 text-center">
             <h1 className="text-3xl font-bold mb-2">
               Enchanted Forest Adventure
             </h1>
-            <p className="text-gray-300">Storyboard Presentation</p>
-            <div className="mt-4 text-sm text-gray-400">
+            <p className="text-gray-400">Storyboard Presentation</p>
+            <div className="mt-4 text-sm text-gray-500">
               Generated on {new Date().toLocaleDateString()}
             </div>
           </div>
@@ -81,9 +86,9 @@ export default function PDFPreview() {
             {scenes.map((scene, index) => (
               <div key={scene.id} className="page-break-inside-avoid">
                 {/* Scene Header */}
-                <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                <div className="border-b border-gray-600 pb-4 mb-6">
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="bg-brand-blue text-dark w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
                       {index + 1}
                     </span>
                     {scene.title}
@@ -94,10 +99,10 @@ export default function PDFPreview() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                   {/* Scene Image */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    <h3 className="text-lg font-semibold text-white mb-3">
                       Scene Visual
                     </h3>
-                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border">
+                    <div className="aspect-video bg-dark-lighter rounded-lg overflow-hidden border border-gray-600">
                       <img
                         src={scene.image}
                         alt={scene.title}
@@ -109,11 +114,11 @@ export default function PDFPreview() {
                   {/* Scene Details */}
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      <h3 className="text-lg font-semibold text-white mb-3">
                         Scene Details
                       </h3>
-                      <div className="p-4 bg-gray-50 rounded-lg border">
-                        <p className="text-sm text-gray-700 leading-relaxed">
+                      <div className="p-4 bg-dark-lighter rounded-lg border border-gray-600">
+                        <p className="text-sm text-gray-300 leading-relaxed">
                           {scene.details}
                         </p>
                       </div>
@@ -123,11 +128,11 @@ export default function PDFPreview() {
 
                 {/* Voiceover */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  <h3 className="text-lg font-semibold text-white mb-3">
                     Voiceover Script
                   </h3>
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-gray-800 leading-relaxed italic">
+                  <div className="p-4 bg-dark-lighter border border-gray-600 rounded-lg">
+                    <p className="text-sm text-gray-300 leading-relaxed italic">
                       {scene.voiceover}
                     </p>
                   </div>
@@ -135,18 +140,18 @@ export default function PDFPreview() {
 
                 {/* Separator for next scene */}
                 {index < scenes.length - 1 && (
-                  <div className="mt-12 border-t border-gray-300"></div>
+                  <div className="mt-12 border-t border-gray-600"></div>
                 )}
               </div>
             ))}
 
             {/* PDF Footer */}
-            <div className="mt-16 pt-8 border-t border-gray-200 text-center">
-              <div className="text-sm text-gray-500 space-y-2">
+            <div className="mt-16 pt-8 border-t border-gray-600 text-center">
+              <div className="text-sm text-gray-400 space-y-2">
                 <p>Total Scenes: {scenes.length}</p>
                 <p>
-                  Designed with love by{" "}
-                  <span className="text-blue-600 font-medium">
+                  Designed with love by{' '}
+                  <span className="text-brand-blue font-medium">
                     yantramayaa designs
                   </span>
                 </p>
@@ -157,13 +162,13 @@ export default function PDFPreview() {
 
         {/* Download Section */}
         <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-400 mb-4">
             This is a preview of how your PDF will look when exported.
           </p>
           <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-brand-blue text-dark text-sm font-bold rounded-lg hover:bg-opacity-90 disabled:opacity-50 transition-colors"
           >
             <Download className="w-5 h-5" />
             {isDownloading ? "Generating PDF..." : "Download PDF"}

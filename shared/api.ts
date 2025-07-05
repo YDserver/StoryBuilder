@@ -10,3 +10,15 @@
 export interface DemoResponse {
   message: string;
 }
+
+/** Scene type shared between client and server */
+export interface Scene {
+  id: number;
+  title: string;
+  image: string;
+  voiceover: string;
+  details: string;
+}
+
+export type CreateScenePayload = Omit<Scene, "id">;
+

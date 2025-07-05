@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Download, Plus } from "lucide-react";
 import { Header, ProjectHeader } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
@@ -7,10 +8,21 @@ import { Scene, CreateScenePayload } from "@shared/api";
 import { fetchScenes, addScene } from "@/lib/api";
 
 
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  lastEdited: string;
+  sceneCount: number;
+  thumbnail: string;
+}
+
 export default function Index() {
+  const { id } = useParams<{ id: string }>();
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [selectedScene, setSelectedScene] = useState<number | null>(null);
   const [showFullView, setShowFullView] = useState<boolean>(false);
+  const [project, setProject] = useState<Project | null>(null);
 
   const currentScene = scenes.find((scene) => scene.id === selectedScene) || null;
 
@@ -20,6 +32,18 @@ export default function Index() {
       if (data.length) setSelectedScene(data[0].id);
     });
   }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('projects');
+    if (!stored) return;
+    try {
+      const list = JSON.parse(stored) as Project[];
+      const found = list.find((p) => p.id === Number(id));
+      if (found) setProject(found);
+    } catch {
+      // ignore parse errors
+    }
+  }, [id]);
 
   useEffect(() => {
     localStorage.setItem('scenes', JSON.stringify(scenes));
@@ -58,10 +82,10 @@ export default function Index() {
                   <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                     <span>Projects</span>
                     <span>/</span>
-                    <span className="text-white">Project Title</span>
+                    <span className="text-white">{project?.title || 'Project Title'}</span>
                   </div>
                   <h2 className="text-2xl font-bold text-white">
-                    Project Title
+                    {project?.title || 'Project Title'}
                   </h2>
                   <p className="text-sm text-gray-400">
                     Last edited 2 days ago
@@ -97,6 +121,7 @@ export default function Index() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <ProjectHeader
             onExportPDF={handleExportPDF}
+            title={project?.title}
             className="hidden lg:block"
           />
 
@@ -121,6 +146,7 @@ export default function Index() {
                     key={scene.id}
                     scene={scene}
                     variant="full"
+                    index={idx}
                     onUpdate={(s) => {
                       const copy = [...scenes];
                       copy[idx] = s;
@@ -158,6 +184,7 @@ export default function Index() {
                 <SceneCard
                   scene={currentScene}
                   variant="single"
+                  index={scenes.findIndex((sc) => sc.id === currentScene.id)}
                   onUpdate={(s) => {
                     const idx = scenes.findIndex((sc) => sc.id === s.id);
                     if (idx !== -1) {

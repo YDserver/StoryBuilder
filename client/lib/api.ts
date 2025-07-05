@@ -84,7 +84,9 @@ export async function deleteScene(id: number): Promise<void> {
 
 export async function downloadPdf(): Promise<Blob> {
   try {
-    const res = await fetch('/api/pdf');
+    const res = await fetch('/api/pdf', {
+      headers: { Accept: 'application/pdf' },
+    });
     if (!res.ok) throw new Error('Failed to generate pdf');
     return await res.blob();
   } catch (err) {

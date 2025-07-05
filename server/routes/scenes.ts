@@ -1,8 +1,10 @@
 import { RequestHandler } from "express";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { Scene, CreateScenePayload } from "@shared/api";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataPath = path.join(__dirname, "../data/scenes.json");
 
 function readScenes(): Scene[] {

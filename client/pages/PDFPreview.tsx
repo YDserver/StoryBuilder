@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Download, ArrowLeft, FileText } from "lucide-react";
 import { Scene } from "@shared/api";
 import { fetchScenes, downloadPdf } from "@/lib/api";
-
+import { Textarea } from "@/components/ui/textarea";
 
 export default function PDFPreview() {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
   const [scenes, setScenes] = useState<Scene[]>([]);
+  const [remarks, setRemarks] = useState("");
 
   useEffect(() => {
     fetchScenes().then(setScenes);
@@ -17,15 +18,15 @@ export default function PDFPreview() {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const blob = await downloadPdf();
+      const blob = await downloadPdf(scenes);
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'storyboard.pdf';
+      link.download = "storyboard.pdf";
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert('Failed to generate PDF');
+      alert("Failed to generate PDF");
     } finally {
       setIsDownloading(false);
     }
@@ -71,14 +72,14 @@ export default function PDFPreview() {
         {/* PDF Container */}
         <div className="bg-dark-card border border-gray-600 rounded-lg overflow-hidden">
           {/* PDF Header */}
-          <div className="bg-dark-lighter text-white p-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">
-              Enchanted Forest Adventure
-            </h1>
-            <p className="text-gray-400">Storyboard Presentation</p>
-            <div className="mt-4 text-sm text-gray-500">
-              Generated on {new Date().toLocaleDateString()}
-            </div>
+          <div className="bg-dark-lighter text-white p-8 text-center space-y-4">
+            <h1 className="text-3xl font-bold">Storyboard Presentation</h1>
+            <Textarea
+              placeholder="Remarks"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="bg-dark-card border-gray-600"
+            />
           </div>
 
           {/* PDF Content */}
@@ -119,7 +120,7 @@ export default function PDFPreview() {
                       </h3>
                       <div className="p-4 bg-dark-lighter rounded-lg border border-gray-600">
                         <p className="text-sm text-gray-300 leading-relaxed">
-                          {scene.details}
+                          {scene.details || "No details provided"}
                         </p>
                       </div>
                     </div>
@@ -133,7 +134,7 @@ export default function PDFPreview() {
                   </h3>
                   <div className="p-4 bg-dark-lighter border border-gray-600 rounded-lg">
                     <p className="text-sm text-gray-300 leading-relaxed italic">
-                      {scene.voiceover}
+                      {scene.voiceover || "No voiceover provided"}
                     </p>
                   </div>
                 </div>
@@ -150,7 +151,7 @@ export default function PDFPreview() {
               <div className="text-sm text-gray-400 space-y-2">
                 <p>Total Scenes: {scenes.length}</p>
                 <p>
-                  Designed with love by{' '}
+                  Designed with love by{" "}
                   <span className="text-brand-blue font-medium">
                     yantramayaa designs
                   </span>

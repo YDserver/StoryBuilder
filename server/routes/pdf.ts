@@ -1,21 +1,16 @@
 import { RequestHandler } from "express";
-import fs from "fs";
-import path from "path";
 import PDFDocument from "pdfkit";
 import { Scene } from "@shared/api";
 
-const dataPath = path.join(__dirname, "../data/scenes.json");
-
-function readScenes(): Scene[] {
-  if (!fs.existsSync(dataPath)) return [];
-  return JSON.parse(fs.readFileSync(dataPath, "utf-8"));
-}
-
-export const generatePdf: RequestHandler = (_req, res) => {
+export const generatePdf: RequestHandler = (req, res) => {
+  const scenes: Scene[] = Array.isArray(req.body?.scenes)
+    ? req.body.scenes
+    : [];
   const doc = new PDFDocument();
-  const scenes = readScenes();
 
+  res.status(200);
   res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=storyboard.pdf");
 
   doc.pipe(res);
 

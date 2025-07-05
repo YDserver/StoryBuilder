@@ -31,7 +31,7 @@ export function createServer() {
   app.delete("/api/scenes/:id", deleteScene);
 
   // PDF export
-  app.get("/api/pdf", generatePdf);
+  app.post("/api/pdf", generatePdf);
 
   return app;
 }

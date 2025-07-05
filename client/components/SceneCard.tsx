@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { updateScene } from "@/lib/api";
 import { Textarea } from "@/components/ui/textarea";
+ 
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+ 
 
 interface Scene {
   id: number;
@@ -26,11 +38,57 @@ export function SceneCard({
   onUpdate,
   index,
 }: SceneCardProps) {
-  const handleReplaceImage = async () => {
-    const url = prompt("New image URL", scene.image);
-    if (!url) return;
-    const updated = await updateScene(scene.id, { image: url });
+  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [imageInput, setImageInput] = useState(scene.image);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageInput(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const applyImage = async () => {
+    if (!imageInput) return;
+    const updated = await updateScene(scene.id, { image: imageInput });
     scene.image = updated.image;
+    onUpdate?.(updated);
+    setShowImageDialog(false);
+  };
+  const initialTitle =
+    index !== undefined &&
+    scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+      ? ""
+      : scene.title;
+  const [title, setTitle] = useState(initialTitle);
+  const [voiceover, setVoiceover] = useState(
+    scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+  );
+  const [details, setDetails] = useState(
+    scene.details === "Enter scene details here..." ? "" : scene.details,
+  );
+
+  useEffect(() => {
+    setTitle(
+      index !== undefined &&
+        scene.title.trim().toLowerCase() === `scene ${index + 1}`.toLowerCase()
+        ? ""
+        : scene.title,
+    );
+    setVoiceover(
+      scene.voiceover === "Enter voiceover text here..." ? "" : scene.voiceover,
+    );
+    setDetails(
+      scene.details === "Enter scene details here..." ? "" : scene.details,
+    );
+    setImageInput(scene.image);
+  }, [scene.id]);
+
+  const saveField = async (data: Partial<Scene>) => {
+    const updated = await updateScene(scene.id, data);
     onUpdate?.(updated);
   };
  
@@ -87,12 +145,32 @@ export function SceneCard({
             alt={scene.title}
             className="w-full h-full object-cover"
           />
-          <button
-            onClick={handleReplaceImage}
-            className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
-          >
-            Replace Image
-          </button>
+        <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
+          <DialogTrigger asChild>
+            <button className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded">
+              Replace Image
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-dark-card border border-gray-600">
+            <DialogHeader>
+              <DialogTitle>Replace Image</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Image URL"
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+              />
+              <Input type="file" accept="image/*" onChange={handleFile} />
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setShowImageDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={applyImage}>Save</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -144,12 +222,34 @@ export function SceneCard({
           alt={scene.title}
           className="w-full h-full object-cover"
         />
-        <button
-          onClick={handleReplaceImage}
-          className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
-        >
-          Replace Image
-        </button>
+        <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
+          <DialogTrigger asChild>
+            <button
+              className="absolute top-2 right-2 bg-dark-card text-white text-xs px-2 py-1 rounded"
+            >
+              Replace Image
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-dark-card border border-gray-600">
+            <DialogHeader>
+              <DialogTitle>Replace Image</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Image URL"
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+              />
+              <Input type="file" accept="image/*" onChange={handleFile} />
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setShowImageDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={applyImage}>Save</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="space-y-6">

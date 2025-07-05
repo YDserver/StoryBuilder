@@ -15,15 +15,7 @@ interface Project {
   sceneCount: number;
   thumbnail: string;
 }
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  lastEdited: string;
-  sceneCount: number;
-  thumbnail: string;
-}
+ 
 
 export default function Index() {
   const { id } = useParams<{ id: string }>();
@@ -43,9 +35,9 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-
+ 
     const stored = localStorage.getItem("projects");
-
+ 
     if (!stored) return;
     try {
       const list = JSON.parse(stored) as Project[];
@@ -57,9 +49,9 @@ export default function Index() {
   }, [id]);
 
   useEffect(() => {
-
+ 
     localStorage.setItem("scenes", JSON.stringify(scenes));
-
+ 
   }, [scenes]);
 
   const handleExportPDF = () => {
@@ -95,14 +87,14 @@ export default function Index() {
                   <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                     <span>Projects</span>
                     <span>/</span>
-
+ 
                     <span className="text-white">
                       {project?.title || "Project Title"}
                     </span>
                   </div>
                   <h2 className="text-2xl font-bold text-white">
                     {project?.title || "Project Title"}
-
+ 
                   </h2>
                   <p className="text-sm text-gray-400">
                     Last edited 2 days ago

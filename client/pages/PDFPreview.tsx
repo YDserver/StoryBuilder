@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Download, ArrowLeft, FileText } from "lucide-react";
 import { Scene } from "@shared/api";
-import { fetchScenes } from "@/lib/api";
-import { generatePdfLocal } from "@/lib/localPdf";
+import { fetchScenes, downloadPdf } from "@/lib/api";
 
 export default function PDFPreview() {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ export default function PDFPreview() {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const blob = await generatePdfLocal(scenes, remarks);
+      const blob = await downloadPdf(scenes, remarks);
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

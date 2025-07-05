@@ -50,10 +50,11 @@ export function Header({ onExportPDF, className }: HeaderProps) {
 
 interface ProjectHeaderProps {
   onExportPDF: () => void;
+  title?: string;
   className?: string;
 }
 
-export function ProjectHeader({ onExportPDF, className }: ProjectHeaderProps) {
+export function ProjectHeader({ onExportPDF, title, className }: ProjectHeaderProps) {
   return (
     <div className={cn("p-6 border-b border-gray-600", className)}>
       <div className="flex justify-between items-start">
@@ -61,9 +62,11 @@ export function ProjectHeader({ onExportPDF, className }: ProjectHeaderProps) {
           <div className="flex items-center gap-2 text-base text-gray-400 mb-4">
             <span>Projects</span>
             <span>/</span>
-            <span className="text-white">Project Title</span>
+            <span className="text-white">{title || 'Project Title'}</span>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Project Title</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">
+            {title || 'Project Title'}
+          </h2>
           <p className="text-sm text-gray-400">Last edited 2 days ago</p>
         </div>
         <button

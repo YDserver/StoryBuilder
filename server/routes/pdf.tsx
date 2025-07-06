@@ -15,6 +15,17 @@ export const generatePdf: RequestHandler = async (req, res) => {
   res.setHeader("Content-Disposition", "attachment; filename=storyboard.pdf");
 
   const document = pdf(<StoryboardPdf scenes={scenes} remarks={remarks} />);
-  const buffer = await document.toBuffer();
-  res.end(buffer);
+  const stream = await document.toBuffer();
+  const chunks: Uint8Array[] = [];
+  stream.on("data", (chunk) => {
+    chunks.push(chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk));
+  });
+  stream.on("end", () => {
+    const buffer = Buffer.concat(chunks);
+    res.end(buffer);
+  });
+  stream.on("error", (err) => {
+    console.error(err);
+    res.status(500).end("Failed to generate PDF");
+  });
 };
